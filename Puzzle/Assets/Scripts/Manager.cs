@@ -1,43 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using Unity.Burst.CompilerServices;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class Manager : MonoBehaviour
 {
-
     public List<Sprite> sprites = new List<Sprite>();
     public GameObject tile;
-    public GameObject falling;
     public GameObject[,] tiles;
-
     // 
     Sprite[] previousLeft = new Sprite[8];
     Sprite previousBelow = null;
-
-
-    private int[] X1 = new int[8];
-    private int[] X2 = new int[8];
-    private int[] X3 = new int[8];
-    private int[] X4 = new int[8];
-    private int[] X5 = new int[8];
-    private int[] X6 = new int[8];
-    private int[] X7 = new int[8];
-    private int[] X8 = new int[8];
-
-    
-    private int[] Y1 = new int[8];
-    private int[] Y2 = new int[8];
-    private int[] Y3 = new int[8];
-    private int[] Y4 = new int[8];
-    private int[] Y5 = new int[8];
-    private int[] Y6 = new int[8];
-    private int[] Y7 = new int[8];
-    private int[] Y8 = new int[8];
-
-
 
     public static Manager Instance { get; private set; }
     public bool IsShifting { get; set; }
@@ -45,17 +18,13 @@ public class Manager : MonoBehaviour
     {
         Instance = this;
     }
-
-
     void Start()
     {
         Vector2 v = new Vector2(1, 1);
         startTile(v.x, v.y);
         transform.position = new Vector3(4, 0.5f, 0);
         transform.Rotate(180, 0, 0);
-        addArr();
     }
-
     private void startTile(float _x, float _y)
     {
         tiles = new GameObject[8, 8];// khoi tao mang 2 chieu 8x8
@@ -68,7 +37,7 @@ public class Manager : MonoBehaviour
             {
                 // set position
                 Vector3 v3 = new Vector3(x + (_x * i), y + (_y * j), 0);
-                GameObject newTile = Instantiate(tile, GetCenter( (int)v3.x , (int)v3.y ), tile.transform.rotation);
+                GameObject newTile = Instantiate(tile, GetCenter((int)v3.x, (int)v3.y), tile.transform.rotation);
                 tiles[i, j] = newTile;
                 tiles[i, j].name = "(" + i + " : " + j + ")";
                 newTile.transform.parent = transform;
@@ -88,157 +57,106 @@ public class Manager : MonoBehaviour
             }
         }
     }
-
     public Vector2 GetCenter(int x, int y)
     {
         return new Vector2(transform.position.x - 4 + x, transform.position.y + 4 - y);
     }
+
+
+
     void Update()
     {
-        addArr();
-    }
-
-    public int getIndexTiles(int x, int y)
-    {
-        int index = -1;
-        for (int i = 0; i < 5; i++)
-        {
-            if (tiles[x, y].GetComponent<SpriteRenderer>().sprite == sprites[i])
-            {
-                index = i;
-            }
-        }
-        return index;
-    }
-
-    private void addArr()
-    {
-        for (int i = 0; i < 8; i++)
-        {
-            X1[i] = getIndexTiles(0, i);
-            X2[i] = getIndexTiles(1, i);
-            X3[i] = getIndexTiles(2, i);
-            X4[i] = getIndexTiles(3, i);
-            X5[i] = getIndexTiles(4, i);
-            X6[i] = getIndexTiles(5, i);
-            X7[i] = getIndexTiles(6, i);
-            X8[i] = getIndexTiles(7, i);
-
-            Y1[i] = getIndexTiles(i, 0);
-            Y2[i] = getIndexTiles(i, 1);
-            Y3[i] = getIndexTiles(i, 2);
-            Y4[i] = getIndexTiles(i, 3);
-            Y5[i] = getIndexTiles(i, 4);
-            Y6[i] = getIndexTiles(i, 5);
-            Y7[i] = getIndexTiles(i, 6);
-            Y8[i] = getIndexTiles(i, 7);
-        }
+        
     }
     void FixedUpdate()
     {
-        startXrd();
+        
     }
-    public void startXrd()
+
+    private Sprite getSprite(int x, int y)
     {
-        xrd(X1, 0, 1);
-        xrd(X2, 1, 1);
-        xrd(X3, 2, 1);
-        xrd(X4, 3, 1);
-        xrd(X5, 4, 1);
-        xrd(X6, 5, 1);
-        xrd(X7, 6, 1);
-        xrd(X8, 7, 1);
-
-
-
-        xrd(Y1, 0, 2);
-        xrd(Y2, 1, 2);
-        xrd(Y3, 2, 2);
-        xrd(Y4, 3, 2);
-        xrd(Y5, 4, 2);
-        xrd(Y6, 5, 2);
-        xrd(Y7, 6, 2);
-        xrd(Y8, 7, 2);
+        if (x < 0 || x >= 8 || y < 0 || y >= 8)
+            return null;
+        GameObject tile = tiles[x, y];
+        SpriteRenderer renderer = tile.GetComponent<SpriteRenderer>();
+        return renderer.sprite;
     }
-    public void xrd(int[] _list, int _index, int _xy)
+    private SpriteRenderer getSpriteRenderer(int x, int y)
     {
-        // _index la stt cua mang: vd X1 la mang 0
-        // _XY de kiem tra xem arr do thuoc truc nao c?a Oxy
-        try
+        if (x < 0 || x >= 8 || y < 0 || y >= 8)
+            return null;
+        GameObject tile = tiles[x, y];
+        SpriteRenderer renderer = tile.GetComponent<SpriteRenderer>();
+        return renderer;
+    }
+
+    public bool CheckTiles()
+    {
+        HashSet<SpriteRenderer> matchedTiles = new HashSet<SpriteRenderer>();
+        for (int x = 0; x < 8; x++)
         {
-            Dictionary<int, List<int>> groupDict = new Dictionary<int, List<int>>();
-            string characters = string.Join("", _list.ToArray());
-            for (int i = 0; i < characters.Length; i++)
+            for (int y = 0; y < 8; y++)
             {
-                int cInt = int.Parse(characters[i].ToString());
-                MatchCollection mColl = Regex.Matches(characters.Substring(i), "^" + characters[i] + "{3,}");
-                if (mColl.Count > 0)
+                SpriteRenderer sprite = getSpriteRenderer(x, y);
+                List<SpriteRenderer> horizontalMatches = Find_x(x, y, sprite.sprite);
+                if (horizontalMatches.Count >= 2)
                 {
-                    if (!groupDict.Keys.Contains(cInt))
-                    {
-                        delet(_list, cInt, _xy, _index);
-                        groupDict.Add(cInt, new List<int>());
-                    }
-                    groupDict[cInt].Add(mColl[0].Length);
-                    i += mColl[0].Length - 1;
+                    matchedTiles.UnionWith(horizontalMatches);
+                    matchedTiles.Add(sprite);
+                }
+
+                List<SpriteRenderer> verticalMatches = Find_y(x, y, sprite.sprite);
+                if (verticalMatches.Count >= 2)
+                {
+                    matchedTiles.UnionWith(verticalMatches);
+                    matchedTiles.Add(sprite);
                 }
             }
         }
-        catch
+        foreach (SpriteRenderer renderer in matchedTiles)
         {
-            
-        }
-    }
-    public void delet(int[] _list, int _cInt, int _xy,int _index)
-    {
-        List<int> list = new List<int>();
-        for (int i = 0; i < 8 ; i++)
-        {
-            if (_list[i] == _cInt)
-            {
-                list.Add(i);
-            }
-        }
-        for (int i = 1; i < list.Count - 1; i++)
-        {
-            int x = list[i] - list[i - 1] - 1;
-            int y = list[i + 1] - list[i] - 1;
-
-            if (x == 0 && y == 0)
-            {
-                Debug.Log(list[i] + "jjjjj" + _index);
-                if(_xy == 1)
-                {
-                    sprite_(_index, list[i], 1);
-                }
-                if(_xy == 2)
-                {
-                    sprite_(list[i], _index, 2);
-                }
-               
-            }
-        }
-    }
-    private void sprite_(int i, int j, int z)
-    {
-        if(z == 1)
-        {
-            GameObject newTile = Instantiate(falling, new Vector3(i,j,0), tile.transform.rotation);
-            newTile.GetComponent<SpriteRenderer>().sprite = tiles[i, j].GetComponent<SpriteRenderer>().sprite;
-            tiles[i, j].GetComponent<SpriteRenderer>().sprite = null;
-            tiles[i, j - 1].GetComponent<SpriteRenderer>().sprite = null;
-            tiles[i, j + 1].GetComponent<SpriteRenderer>().sprite = null;
-        }
-        if (z == 2)
-        {
-            tiles[i, j].GetComponent<SpriteRenderer>().sprite = null;
-            tiles[i - 1, j].GetComponent<SpriteRenderer>().sprite = null;
-            tiles[i + 1, j].GetComponent<SpriteRenderer>().sprite = null;
+            renderer.sprite = null;
+            StopCoroutine(FindNullTiles());
+            StartCoroutine(FindNullTiles());
         }
 
-        StopCoroutine(FindNullTiles());
-        StartCoroutine(FindNullTiles());
+        return matchedTiles.Count > 0;
     }
+
+    List<SpriteRenderer> Find_x(int x, int y, Sprite sprite)
+    {
+        List<SpriteRenderer> result = new List<SpriteRenderer>();
+        for (int i = x + 1; i < 8; i++)
+        {
+            SpriteRenderer nextColumn = getSpriteRenderer(i, y);
+            if (nextColumn.sprite != sprite)
+            {
+                break;
+            }
+            result.Add(nextColumn);
+        }
+        return result;
+    }
+
+    List<SpriteRenderer> Find_y(int x, int y, Sprite sprite)
+    {
+        List<SpriteRenderer> result = new List<SpriteRenderer>();
+        for (int i = y + 1; i < 8; i++)
+        {
+            SpriteRenderer nextRow = getSpriteRenderer(x, i);
+            if (nextRow.sprite != sprite)
+            {
+                break;
+            }
+            result.Add(nextRow);
+        }
+        return result;
+    }
+
+
+
+
+
 
     public IEnumerator FindNullTiles()
     {
@@ -246,7 +164,7 @@ public class Manager : MonoBehaviour
         {
             for (int y = 0; y < 8; y++)
             {
-                if (tiles[x, y].GetComponent<SpriteRenderer>().sprite == null)
+                if (getSprite(x,y) == null)
                 {
                     yield return StartCoroutine(ShiftTilesDown(x, y));
                     break;
@@ -255,7 +173,7 @@ public class Manager : MonoBehaviour
         }
     }
 
-    private IEnumerator ShiftTilesDown(int x, int yStart, float shiftDelay = .15f)
+    private IEnumerator ShiftTilesDown(int x, int yStart, float shiftDelay = .1f)
     {
         IsShifting = true;
         List<SpriteRenderer> renders = new List<SpriteRenderer>();
@@ -301,11 +219,7 @@ public class Manager : MonoBehaviour
         {
             possibleCharacters.Remove(tiles[x, y - 1].GetComponent<SpriteRenderer>().sprite);
         }
-
         return possibleCharacters[Random.Range(0, possibleCharacters.Count)];
     }
-
-
-
 
 }

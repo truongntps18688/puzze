@@ -53,6 +53,15 @@ public class Tile : MonoBehaviour
                 {
                     swap(Selected.sprite);
                     Selected.Deselect();
+                    bool check = Manager.Instance.CheckTiles();
+                    if (!check)
+                    {
+                        do
+                        {
+                            StopCoroutine(Manager.Instance.FindNullTiles());
+                            StartCoroutine(Manager.Instance.FindNullTiles());
+                        } while (Manager.Instance.CheckTiles());
+                    }
                 }
                 else
                 {

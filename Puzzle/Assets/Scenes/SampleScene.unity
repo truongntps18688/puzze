@@ -132,7 +132,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 96384318}
-  - component: {fileID: 96384317}
+  - component: {fileID: 96384319}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -140,26 +140,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &96384317
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 96384316}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f119061c169cc4b45874c969f3e5e539, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sprites:
-  - {fileID: -638050307, guid: 416f3f09a401a0747a7e8946f1bdd55d, type: 3}
-  - {fileID: 1919357494, guid: 416f3f09a401a0747a7e8946f1bdd55d, type: 3}
-  - {fileID: -661362324, guid: 416f3f09a401a0747a7e8946f1bdd55d, type: 3}
-  - {fileID: -1381834180, guid: 416f3f09a401a0747a7e8946f1bdd55d, type: 3}
-  - {fileID: -1059723031, guid: 261a84d010549b8429e4717d7b282885, type: 3}
-  tile: {fileID: 2497406134169984764, guid: b05d3da7bd3f2774d869ca59cc08aa11, type: 3}
-  falling: {fileID: 3932438788608555458, guid: 7deab6bb6b7c40345be351d0a6f15b5b, type: 3}
 --- !u!4 &96384318
 Transform:
   m_ObjectHideFlags: 0
@@ -175,6 +155,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &96384319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 96384316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25a78eced7ba49a49b922782c905bb78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprites:
+  - {fileID: -638050307, guid: 416f3f09a401a0747a7e8946f1bdd55d, type: 3}
+  - {fileID: 1919357494, guid: 416f3f09a401a0747a7e8946f1bdd55d, type: 3}
+  - {fileID: -661362324, guid: 416f3f09a401a0747a7e8946f1bdd55d, type: 3}
+  - {fileID: -1381834180, guid: 416f3f09a401a0747a7e8946f1bdd55d, type: 3}
+  - {fileID: -1059723031, guid: 261a84d010549b8429e4717d7b282885, type: 3}
+  tile: {fileID: 2497406134169984764, guid: b05d3da7bd3f2774d869ca59cc08aa11, type: 3}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
