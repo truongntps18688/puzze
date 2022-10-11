@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.SocialPlatforms.Impl;
 
 public class Manager : MonoBehaviour
@@ -9,7 +10,7 @@ public class Manager : MonoBehaviour
     public GameObject tile;
     public GameObject[,] tiles;
     // 
-    Sprite[] previousLeft = new Sprite[8];
+    Sprite[] previousLeft = new Sprite[9];
     Sprite previousBelow = null;
 
     public static Manager Instance { get; private set; }
@@ -27,13 +28,13 @@ public class Manager : MonoBehaviour
     }
     private void startTile(float _x, float _y)
     {
-        tiles = new GameObject[8, 8];// khoi tao mang 2 chieu 8x8
+        tiles = new GameObject[8, 9];// khoi tao mang 2 chieu 8x8
         float x = transform.position.x; // lay vi tri cua transform
         float y = transform.position.y;
 
         for (int i = 0; i < 8; i++)
         {
-            for (int j = 0; j < 8; j++)
+            for (int j = 0; j < 9; j++)
             {
                 // set position
                 Vector3 v3 = new Vector3(x + (_x * i), y + (_y * j), 0);
@@ -42,6 +43,10 @@ public class Manager : MonoBehaviour
                 tiles[i, j].name = "(" + i + " : " + j + ")";
                 newTile.transform.parent = transform;
                 newTile.transform.Rotate(180, 0, 0);
+                if(j == 8)
+                {
+                    newTile.SetActive(false);
+                }
                 // ng?n ch?n l?p 3 
                 List<Sprite> listSprite = new List<Sprite>();
                 listSprite.AddRange(sprites);
@@ -61,12 +66,9 @@ public class Manager : MonoBehaviour
     {
         return new Vector2(transform.position.x - 4 + x, transform.position.y + 4 - y);
     }
-
-
-
     void Update()
     {
-        
+
     }
     void FixedUpdate()
     {
@@ -92,7 +94,8 @@ public class Manager : MonoBehaviour
 
     public bool CheckTiles()
     {
-        HashSet<SpriteRenderer> matchedTiles = new HashSet<SpriteRenderer>();
+        Debug.Log("?ang check");
+        HashSet<SpriteRenderer> list = new HashSet<SpriteRenderer>();
         for (int x = 0; x < 8; x++)
         {
             for (int y = 0; y < 8; y++)
@@ -101,62 +104,57 @@ public class Manager : MonoBehaviour
                 List<SpriteRenderer> horizontalMatches = Find_x(x, y, sprite.sprite);
                 if (horizontalMatches.Count >= 2)
                 {
-                    matchedTiles.UnionWith(horizontalMatches);
-                    matchedTiles.Add(sprite);
+                    list.UnionWith(horizontalMatches);
+                    list.Add(sprite);
                 }
 
                 List<SpriteRenderer> verticalMatches = Find_y(x, y, sprite.sprite);
                 if (verticalMatches.Count >= 2)
                 {
-                    matchedTiles.UnionWith(verticalMatches);
-                    matchedTiles.Add(sprite);
+                    list.UnionWith(verticalMatches);
+                    list.Add(sprite);
                 }
             }
         }
-        foreach (SpriteRenderer renderer in matchedTiles)
+        foreach (SpriteRenderer renderer in list)
         {
             renderer.sprite = null;
-            StopCoroutine(FindNullTiles());
-            StartCoroutine(FindNullTiles());
         }
-
-        return matchedTiles.Count > 0;
+        ManagerTime.Instance.addScore(list.Count);
+        StopCoroutine(FindNullTiles());
+        StartCoroutine(FindNullTiles());
+        return list.Count > 0;
     }
 
     List<SpriteRenderer> Find_x(int x, int y, Sprite sprite)
     {
-        List<SpriteRenderer> result = new List<SpriteRenderer>();
+        List<SpriteRenderer> list = new List<SpriteRenderer>();
         for (int i = x + 1; i < 8; i++)
         {
-            SpriteRenderer nextColumn = getSpriteRenderer(i, y);
-            if (nextColumn.sprite != sprite)
+            SpriteRenderer next_x = getSpriteRenderer(i, y);
+            if (next_x.sprite != sprite)
             {
                 break;
             }
-            result.Add(nextColumn);
+            list.Add(next_x);
         }
-        return result;
+        return list;
     }
 
     List<SpriteRenderer> Find_y(int x, int y, Sprite sprite)
     {
-        List<SpriteRenderer> result = new List<SpriteRenderer>();
+        List<SpriteRenderer> list = new List<SpriteRenderer>();
         for (int i = y + 1; i < 8; i++)
         {
-            SpriteRenderer nextRow = getSpriteRenderer(x, i);
-            if (nextRow.sprite != sprite)
+            SpriteRenderer next_y = getSpriteRenderer(x, i);
+            if (next_y.sprite != sprite)
             {
                 break;
             }
-            result.Add(nextRow);
+            list.Add(next_y);
         }
-        return result;
+        return list;
     }
-
-
-
-
-
 
     public IEnumerator FindNullTiles()
     {
@@ -179,7 +177,7 @@ public class Manager : MonoBehaviour
         List<SpriteRenderer> renders = new List<SpriteRenderer>();
         int nullCount = 0;
 
-        for (int y = yStart; y < 8; y++)
+        for (int y = yStart; y < 9; y++)
         {
             SpriteRenderer render = tiles[x, y].GetComponent<SpriteRenderer>();
             if (render.sprite == null)
@@ -188,19 +186,20 @@ public class Manager : MonoBehaviour
             }
             renders.Add(render);
         }
-
         for (int i = 0; i < nullCount; i++)
         {
             yield return new WaitForSeconds(shiftDelay);
             for (int k = 0; k < renders.Count - 1; k++)
             {
                 renders[k].sprite = renders[k + 1].sprite;
-                renders[k].size = new Vector2(1f, 1f);
-                renders[k + 1].sprite = GetNewSprite(x, 8 - 1);
-                renders[k + 1].size = new Vector2(1f, 1f);
+                renders[k].size = new Vector2(0.9f, 0.9f);
+
+                renders[k + 1].sprite = GetNewSprite(x, 9 - 1);
+                renders[k + 1].size = new Vector2(0.9f, 0.9f);
             }
         }
         IsShifting = false;
+        Debug.Log("xonggggggggggg : ");
     }
     private Sprite GetNewSprite(int x, int y)
     {

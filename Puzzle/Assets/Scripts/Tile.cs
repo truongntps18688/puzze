@@ -22,7 +22,6 @@ public class Tile : MonoBehaviour
         sprite.color = selectedColor;
         Selected = gameObject.GetComponent<Tile>();
     }
-
     private void Deselect()
     {
         click = false;
@@ -53,6 +52,7 @@ public class Tile : MonoBehaviour
                 {
                     swap(Selected.sprite);
                     Selected.Deselect();
+                    ManagerTime.Instance.reducedTime();
                     bool check = Manager.Instance.CheckTiles();
                     if (!check)
                     {
