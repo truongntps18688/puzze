@@ -13,7 +13,8 @@ public class ManagerTime : MonoBehaviour
     public GameObject MenuOver;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI scoreHightText;
-
+    public GameObject gameObjects1;
+    public GameObject gameObjects2;
     private int Score = 0;
     private int ScoreHight = 0;
 
@@ -56,6 +57,8 @@ public class ManagerTime : MonoBehaviour
                 scoreText.color = Color.red;
                 scoreText.text = Score + " !";
             }
+            gameObjects1.SetActive(false);
+            gameObjects2.SetActive(false);
         }
 
     }

@@ -120,9 +120,9 @@ public class Manager : MonoBehaviour
         {
             renderer.sprite = null;
         }
-        ManagerTime.Instance.addScore(list.Count);
-        StopCoroutine(FindNullTiles());
         StartCoroutine(FindNullTiles());
+        ManagerTime.Instance.addScore(list.Count);
+        
         return list.Count > 0;
     }
 
@@ -198,6 +198,11 @@ public class Manager : MonoBehaviour
                 renders[k + 1].size = new Vector2(0.9f, 0.9f);
             }
         }
+        if (checkFull())
+        {   
+            StopCoroutine(FindNullTiles());
+            StartCoroutine(FindNullTiles());
+        }
         IsShifting = false;
         Debug.Log("xonggggggggggg : ");
     }
@@ -220,5 +225,19 @@ public class Manager : MonoBehaviour
         }
         return possibleCharacters[Random.Range(0, possibleCharacters.Count)];
     }
-
+    private bool checkFull()
+    {
+        int counts = 0;
+        for (int x = 0; x < 8; x++)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                if (getSprite(x, y) == null)
+                {
+                    counts++;
+                }
+            }
+        }
+        return counts > 0;
+    }
 }

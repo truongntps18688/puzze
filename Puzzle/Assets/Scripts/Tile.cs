@@ -38,12 +38,14 @@ public class Tile : MonoBehaviour
         if (click)
         {
             Deselect();
+            ManagerSounds.Instance.click();
         }
         else
         {
             if (Selected == null)
             {
                 Select();
+                ManagerSounds.Instance.click();
             }
             else
             {
@@ -62,11 +64,13 @@ public class Tile : MonoBehaviour
                             StartCoroutine(Manager.Instance.FindNullTiles());
                         } while (Manager.Instance.CheckTiles());
                     }
+                    ManagerSounds.Instance.click();
                 }
                 else
                 {
                     Selected.GetComponent<Tile>().Deselect();
                     Select();
+                    ManagerSounds.Instance.click();
                 }
             }
         }
